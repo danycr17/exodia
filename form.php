@@ -56,7 +56,7 @@
                     echo '<td>', $campo_Radio, '</td>';
                     //echo 'tipo_pregunta';
                 } else {
-                    echo '<td>Tipo de pregunta no soportado</td>';
+                    echo '<td>Tipo de pregunta  soportado</td>';
                 }
                 echo '</tr>';
             }
