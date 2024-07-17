@@ -1,0 +1,111 @@
+@media (max-width: 768px) {
+    
+}
+.image-container {
+    animation: scaleUpDown 1s ease infinite alternate;
+}
+
+@keyframes scaleUpDown {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+
+/* Estilos para pantallas grandes (laptop y PC de escritorio) */
+@media (min-width: 769px) {
+    .container {
+        display: flex;
+        justify-content: space-between; /* Espacio entre los contenedores */
+        align-items: center;
+    }
+
+    .image-container {
+        flex: 1; /* Ocupa la mitad del ancho */
+        order: 2; /* Cambia el orden para que aparezca después del contenedor de preguntas */
+    }
+
+    .button-container {
+        flex: 1; /* Ocupa la mitad del ancho */
+    }
+}
+
+/* Estilos para pantallas pequeñas (dispositivos móviles) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Cambio a dirección vertical */
+        justify-content: flex-start; /* Alineación arriba */
+        align-items: center;
+    }
+
+    .image-container {
+        order: 1; /* Cambia el orden para que aparezca antes del contenedor de preguntas */
+    }
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column; /* Cambio a dirección vertical */
+    justify-content: flex-start; /* Alineación arriba */
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('brg.jpg');
+    background-size: cover;
+    background-size: 100% 100%;
+    background-repeat: repeat;
+
+}
+
+
+
+
+.image-container {
+    flex: 2;
+    text-align: center;
+}
+
+
+
+.button-container {
+    flex: 3;
+    text-align: left;
+    
+}.button-container button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 25px;
+    font-size: 20px;
+    background-color: #2c9a3d; /* Color con opacidad */
+    color: white;
+    border: none;
+    border-radius: 10px; /* Bordes curvos */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-container button:hover {
+    background-color: #69ff05; /* Color al pasar el cursor */
+}
+
+.container {
+    display: flex ;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    border-radius: 20px;
+    margin: auto;
+    background: #b3f9bd;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center; 
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.619), rgba(35, 138, 42, 0.5));
+   
+}
