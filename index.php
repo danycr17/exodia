@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="title-container">
-        <h1>Seguridad POSCO MPPC</h1>
+        <h1>Seguridad POSCO </h1>
     </div>
 
     <div class="container">
