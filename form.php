@@ -191,7 +191,7 @@
                 echo '<br><input type="submit" value="Enviar respuestas">';
                 echo '</form>';
             } else {
-                echo "Sin resultados";
+                echo "Sin resultado";
             }
         } else {
             echo "No se ha seleccionado ninguna encuesta.";
