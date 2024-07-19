@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div class="title-container">
+        <h1>Seguridad POSCO </h1>
+    </div>
+
     <div class="container">
        <div class="button-container">
      
@@ -43,7 +47,7 @@
 
         </div>
         <div class="image-container">
-            <img src="img/posco1.png" style="max-width: 100%;">
+            <img src="img/posco1.PNG" style="max-width: 100%;">
         </div>
     </div>
     
