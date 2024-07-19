@@ -1,9 +1,36 @@
 <?php
-session_start();
 include "./conexion/conexion.php";
 include "funciones.php";
 
-// Función para mostrar el formulario basado en el id_encuesta
+session_start();
+
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = bin2hex(openssl_random_pseudo_bytes(16));
+}
+
+$session_id = $_SESSION['session_id'];
+
+// Verificar si el session_id ya existe
+$sql_check = "SELECT COUNT(*) as count FROM reg_visit WHERE id_registro = '$session_id'";
+$result_check = $conn->query($sql_check);
+$row_check = $result_check->fetch_assoc();
+
+if ($row_check['count'] == 0) {
+    // Insertar el session_id si no existe
+    $sql = "INSERT INTO reg_visit (id_registro) VALUES ('$session_id')";
+    if ($conn->query($sql) === TRUE) {
+        echo "Sesión almacenada correctamente. ID: " . $conn->insert_id;
+        echo "<br>Session ID: " . $session_id; // Imprimir el session_id
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+} else {
+    echo "El session_id ya existe en la base de datos.";
+    echo "<br>Session ID: " . $session_id; // Imprimir el session_id si ya existe
+}
+
+
+
 function mostrarFormulario($conn, $id_encuesta) {
     // Consultar el nombre de la encuesta basado en el id_encuesta
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
@@ -17,7 +44,6 @@ function mostrarFormulario($conn, $id_encuesta) {
         echo "<div class='titulo'>No se encontró el nombre de la encuesta.</div>";
     }
 
-    // Consultar las preguntas basadas en el id_encuesta
     $sql_preguntas = "SELECT id_pregunta, pregunta, tipo_pregunta, conf FROM preguntas WHERE id_encuesta = $id_encuesta";
     $result_preguntas = $conn->query($sql_preguntas);
 
@@ -65,7 +91,6 @@ function mostrarFormulario($conn, $id_encuesta) {
     }
 }
 
-// Mostrar siempre el formulario de registro si no se ha completado
 if (!isset($_SESSION['registro_completado'])) {
     mostrarFormulario($conn, 5);
 } else {
@@ -84,9 +109,10 @@ function mostrarSiguienteEncuesta() {
     // Marcar el registro como completado
     <?php $_SESSION['registro_completado'] = true; ?>
     // Recargar la página con la nueva encuesta
-    window.location.href = "?id_encuesta=5"; // Cambia 6 por el id de la siguiente encuesta
+    window.location.href = "?id_encuesta=5"; // Cambia 5 por el id de la siguiente encuesta
 }
 </script>
+
 
 <style>  
         body {   
