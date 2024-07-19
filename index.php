@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="title-container">
-        <h1>Seguridad POSCO </h1>
+        <h1>Seguridad POSCO Puebla </h1>
     </div>
 
     <div class="container">
@@ -19,7 +19,7 @@
             include "./conexion/conexion.php";
 
             function generarBotones($conn) {
-                $sql = "SELECT id_encuesta, nombre, url FROM form";
+                $sql = "SELECT id_encuesta, nombre, url FROM form WHERE id_encuesta != 4";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
@@ -38,7 +38,7 @@
           
           
 
-            // Cerrar la conexión
+            // Cerrar la conex
             $conn->close();
             ?>
 

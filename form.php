@@ -1,10 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario</title>
-    <style>  
+<?php
+session_start();
+include "./conexion/conexion.php";
+include "funciones.php";
+
+// Función para mostrar el formulario basado en el id_encuesta
+function mostrarFormulario($conn, $id_encuesta) {
+    // Consultar el nombre de la encuesta basado en el id_encuesta
+    $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
+    $result_nombre = $conn->query($sql_nombre);
+
+    if ($result_nombre->num_rows > 0) {
+        $row_nombre = $result_nombre->fetch_assoc();
+        $nombre_encuesta = ($row_nombre['nombre']);
+        echo "<div class='titulo'>$nombre_encuesta</div>";
+    } else {
+        echo "<div class='titulo'>No se encontró el nombre de la encuesta.</div>";
+    }
+
+    // Consultar las preguntas basadas en el id_encuesta
+    $sql_preguntas = "SELECT id_pregunta, pregunta, tipo_pregunta, conf FROM preguntas WHERE id_encuesta = $id_encuesta";
+    $result_preguntas = $conn->query($sql_preguntas);
+
+    if ($result_preguntas->num_rows > 0) {
+        echo '<form id="encuesta_form_' . $id_encuesta . '" action="procesar_respuestas.php" method="POST">';
+        echo '<table border="1">';
+        echo '<tr><th>Pregunta</th><th>Respuesta</th></tr>';
+        
+        $contador = 0;
+        while ($row = $result_preguntas->fetch_assoc()) {
+            echo '<tr class="pregunta"';
+            if ($contador >= 2) {
+                echo ' style="display: none;"';
+            }
+            echo '>';
+            echo '<td>', $row["pregunta"], '</td>';
+            
+            if ($row["tipo_pregunta"] === 'text') {
+                echo '<td>', crearCampoLibre($row["id_pregunta"]), '</td>';
+            
+            } elseif ($row["tipo_pregunta"] === 'lista') {
+                $campo_lista = crearCampoLista($conn, $row["id_pregunta"], $row["conf"]);
+                echo '<td>', $campo_lista, '</td>';
+            } elseif ($row["tipo_pregunta"] === 'checkbox') {
+                $campo_checkbox = crearCampoCheckbox($conn, $row["id_pregunta"], $row["conf"]);
+                echo '<td>', $campo_checkbox, '</td>';
+               
+            } elseif ($row["tipo_pregunta"] === 'radio') {
+                $campo_radio = crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]);
+                echo '<td>', $campo_radio, '</td>';
+            } else {
+                echo '<td>Tipo de pregunta no soportado</td>';
+            }
+            echo '</tr>';
+            $contador++;
+        }
+
+        echo '</table>';
+        echo '<br><input type="button" id="siguiente_pregunta_' . $id_encuesta . '" value="Siguiente pregunta" onclick="mostrarSiguienteEncuesta()">';
+      
+        echo '<input type="submit" value="Enviar respuestas" style="display: none;" id="submit_encuesta_' . $id_encuesta . '">';
+        echo '</form>';
+    } else {
+        echo "Sin resultados";
+    }
+}
+
+// Mostrar siempre el formulario de registro si no se ha completado
+if (!isset($_SESSION['registro_completado'])) {
+    mostrarFormulario($conn, 5);
+} else {
+    // Mostrar el formulario basado en la variable recibida
+    if (isset($_GET['id_encuesta'])) {
+        $id_encuesta = (int)$_GET['id_encuesta'];
+        mostrarFormulario($conn, $id_encuesta);
+    }
+}
+
+$conn->close();
+?>
+
+<script>
+function mostrarSiguienteEncuesta() {
+    // Marcar el registro como completado
+    <?php $_SESSION['registro_completado'] = true; ?>
+    // Recargar la página con la nueva encuesta
+    window.location.href = "?id_encuesta=5"; // Cambia 6 por el id de la siguiente encuesta
+}
+</script>
+
+<style>  
         body {   
             background-image: url('1.jpg');
             background-size: cover;
@@ -37,7 +121,7 @@
         form {
             max-width: 1000px;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0));                                         
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -134,70 +218,3 @@
             margin-right: 10px;
         }
     </style>
-</head>
-<body>
-    <?php
-        include "./conexion/conexion.php";
-        include "funciones.php";
-
-        if (isset($_GET['id_encuesta'])) {
-            $id_encuesta = (int)$_GET['id_encuesta'];
-
-            $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
-            $result_nombre = $conn->query($sql_nombre);
-
-            if ($result_nombre->num_rows > 0) {
-                $row_nombre = $result_nombre->fetch_assoc();
-                $nombre_encuesta = ($row_nombre['nombre']);
-                echo "<div class='titulo'>$nombre_encuesta</div>";
-            } else {
-                echo "<div class='titulo'>No se encontró el nombre de la encuesta.</div>";
-            }
-
-            $sql_preguntas = "SELECT id_pregunta, pregunta, tipo_pregunta, conf FROM preguntas WHERE id_encuesta = $id_encuesta";
-            $result_preguntas = $conn->query($sql_preguntas);
-
-            if ($result_preguntas->num_rows > 0) {
-                echo '<form action="procesar_respuestas.php" method="POST">';
-                echo '<table>';
-                echo '<tr><th>Pregunta</th><th>Respuesta</th></tr>';
-                
-                while ($row = $result_preguntas->fetch_assoc()) {
-                    echo '<tr>';
-                    echo '<td>', $row["pregunta"], '</td>';
-                    
-                    if ($row["tipo_pregunta"] === 'text') {
-                        echo '<td><input type="text" name="pregunta_', $row["id_pregunta"], '"></td>';
-                    
-                    } elseif ($row["tipo_pregunta"] === 'lista') {
-                        $campo_lista = crearCampoLista($conn, $row["id_pregunta"], $row["conf"]);
-                        echo '<td>', $campo_lista, '</td>';
-                    
-                    } elseif ($row["tipo_pregunta"] === 'checkbox') {
-                        $campo_checkbox = crearCampoCheckbox($conn, $row["id_pregunta"], $row["conf"]);
-                        echo '<td class="checkbox-group">', $campo_checkbox, '</td>';
-                       
-                    } elseif ($row["tipo_pregunta"] === 'radio') {
-                        $campo_radio = crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]);
-                        echo '<td class="radio-group">', $campo_radio, '</td>';
-                    
-                    } else {
-                        echo '<td>Tipo de pregunta no soportado</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '</table>';
-                echo '<br><input type="submit" value="Enviar respuestas">';
-                echo '</form>';
-            } else {
-                echo "Sin resultado";
-            }
-        } else {
-            echo "No se ha seleccionado ninguna encuesta.";
-        }
-
-        $conn->close();
-    ?>
-</body>
-</html>
