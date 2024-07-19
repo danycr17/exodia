@@ -2,36 +2,48 @@
 include "./conexion/conexion.php";
 include "funciones.php";
 
+
+
 session_start();
 
-if (!isset($_SESSION['session_id'])) {
-    $_SESSION['session_id'] = bin2hex(openssl_random_pseudo_bytes(16));
+if (!isset($_SESSION['id_registro'])) {
+    $_SESSION['id_registro'] = bin2hex(openssl_random_pseudo_bytes(16));
 }
 
-$session_id = $_SESSION['session_id'];
+$id_registro = $_SESSION['id_registro'];
+echo "Session ID: " . $id_registro; // Imprimir el id_registro
 
-// Verificar si el session_id ya existe
-$sql_check = "SELECT COUNT(*) as count FROM reg_visit WHERE id_registro = '$session_id'";
+// Conexión a la base de datos
+include "./conexion/conexion.php";
+
+// Verificar si el id_registro ya existe en la base de datos
+$sql_check = "SELECT COUNT(*) as count FROM reg_visit WHERE id_registro = '$id_registro'";
 $result_check = $conn->query($sql_check);
 $row_check = $result_check->fetch_assoc();
 
 if ($row_check['count'] == 0) {
-    // Insertar el session_id si no existe
-    $sql = "INSERT INTO reg_visit (id_registro) VALUES ('$session_id')";
+    // Insertar el id_registro si no existe
+    $sql = "INSERT INTO reg_visit (id_registro) VALUES ('$id_registro')";
     if ($conn->query($sql) === TRUE) {
         echo "Sesión almacenada correctamente. ID: " . $conn->insert_id;
-        echo "<br>Session ID: " . $session_id; // Imprimir el session_id
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 } else {
-    echo "El session_id ya existe en la base de datos.";
-    echo "<br>Session ID: " . $session_id; // Imprimir el session_id si ya existe
+    echo "El id_registro ya existe en la base de datos.";
 }
 
 
 
-function mostrarFormulario($conn, $id_encuesta) {
+
+
+
+
+
+
+
+
+function mostrarFormulario($conn, $id_encuesta, $id_registro, $esUltimaEncuesta) {
     // Consultar el nombre de la encuesta basado en el id_encuesta
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -49,9 +61,9 @@ function mostrarFormulario($conn, $id_encuesta) {
 
     if ($result_preguntas->num_rows > 0) {
         echo '<form id="encuesta_form_' . $id_encuesta . '" action="procesar_respuestas.php" method="POST">';
+        echo '<input type="hidden" name="id_registro" value="' . $id_registro . '">';
         echo '<table border="1">';
-        echo '<tr><th>Pregunta</th><th>Respuesta</th></tr>';
-        
+        echo '<tr><th>Pregunta</th><th>Respuesta</th></tr>';     
         $contador = 0;
         while ($row = $result_preguntas->fetch_assoc()) {
             echo '<tr class="pregunta"';
@@ -63,7 +75,7 @@ function mostrarFormulario($conn, $id_encuesta) {
             
             if ($row["tipo_pregunta"] === 'text') {
                 echo '<td>', crearCampoLibre($row["id_pregunta"]), '</td>';
-            
+           
             } elseif ($row["tipo_pregunta"] === 'lista') {
                 $campo_lista = crearCampoLista($conn, $row["id_pregunta"], $row["conf"]);
                 echo '<td>', $campo_lista, '</td>';
@@ -80,11 +92,12 @@ function mostrarFormulario($conn, $id_encuesta) {
             echo '</tr>';
             $contador++;
         }
-
         echo '</table>';
-        echo '<br><input type="button" id="siguiente_pregunta_' . $id_encuesta . '" value="Siguiente pregunta" onclick="mostrarSiguienteEncuesta()">';
-      
-        echo '<input type="submit" value="Enviar respuestas" style="display: none;" id="submit_encuesta_' . $id_encuesta . '">';
+        if ($esUltimaEncuesta) {
+            echo '<br><input type="submit" value="Enviar respuestas" id="submit_encuesta_' . $id_encuesta . '">';
+        } else {
+            echo '<br><input type="button" id="siguiente_pregunta_' . $id_encuesta . '" value="Siguiente pregunta" onclick="mostrarSiguienteEncuesta(\'' . $id_registro . '\')">';
+        }
         echo '</form>';
     } else {
         echo "Sin resultados";
@@ -92,27 +105,29 @@ function mostrarFormulario($conn, $id_encuesta) {
 }
 
 if (!isset($_SESSION['registro_completado'])) {
-    mostrarFormulario($conn, 5);
+    mostrarFormulario($conn, 5, $id_registro, false); // Cambia false a true si esta es la última encuesta
 } else {
     // Mostrar el formulario basado en la variable recibida
     if (isset($_GET['id_encuesta'])) {
         $id_encuesta = (int)$_GET['id_encuesta'];
-        mostrarFormulario($conn, $id_encuesta);
+        $esUltimaEncuesta = ($id_encuesta == 5); 
+        mostrarFormulario($conn, $id_encuesta, $id_registro, $esUltimaEncuesta);
     }
 }
 
-$conn->close();
+
+
 ?>
 
+
 <script>
-function mostrarSiguienteEncuesta() {
+function mostrarSiguienteEncuesta(id_registro) {
     // Marcar el registro como completado
     <?php $_SESSION['registro_completado'] = true; ?>
-    // Recargar la página con la nueva encuesta
-    window.location.href = "?id_encuesta=5"; // Cambia 5 por el id de la siguiente encuesta
+    // Recargar la página con la nueva encuesta y mantener el id_registro en la URL
+    window.location.href = "?id_encuesta=5&id_registro=" + id_registro; // Cambia 5 por el id de la siguiente encuesta
 }
-</script>
-
+</script>   
 
 <style>  
         body {   
