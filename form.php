@@ -88,7 +88,6 @@ function mostrarFormulario($conn, $id_encuesta, $id_registro, $esUltimaEncuesta,
     }
 }
 
-// Mostrar sólo el formulario de la encuesta
 if (isset($_GET['id_encuesta'])) {
     $id_encuesta = (int)$_GET['id_encuesta'];
     $esUltimaEncuesta = ($id_encuesta == 5); 
