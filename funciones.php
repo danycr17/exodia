@@ -58,5 +58,7 @@ function crearCampoRadio($conn, $id_pregunta, $grupo) {
     return $campo;
 }
 
+
+
 ?>
 

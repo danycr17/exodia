@@ -1,56 +1,81 @@
-<?php
+este archivo de  formulario esta reciviendo las respuestas <?php
 include "./conexion/conexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if (isset($_POST['respuesta']) && is_array($_POST['respuesta'])) {
+    // Verificar los datos recibidos
+    echo '<h3>Datos recibidos en $_POST:</h3>';
+    echo '<pre>';
+    print_r($_POST);
+    echo '</pre>';
+    
+    if (isset($_POST['id_registro']) && isset($_POST['respuesta']) && is_array($_POST['respuesta'])) {
         $respuestas = $_POST['respuesta'];
+        $id_registro = $conn->real_escape_string($_POST['id_registro']);
         $empresa = '';
         $nombre = '';
 
+        // Debug: Imprimir id_registro recibido
+        echo '<h3>ID Registro Recibido:</h3>';
+        echo '<p>' . htmlspecialchars($id_registro) . '</p>';
+
         foreach ($respuestas as $id_pregunta => $respuesta) {
             $id_pregunta = (int)$id_pregunta;
-           
+
             if (is_array($respuesta)) {
-                
                 $respuesta = implode(', ', array_map(array($conn, 'real_escape_string'), $respuesta));
             } else {
-               
                 $respuesta = $conn->real_escape_string($respuesta);
-                echo $respuesta;
             }
 
-            $sql = "SELECT pregunta FROM preguntas WHERE id_pregunta = $id_pregunta";
-            $result = $conn->query($sql);
+            if ($id_pregunta > 0) {
+                $sql = "SELECT pregunta FROM preguntas WHERE id_pregunta = $id_pregunta";
+                $result = $conn->query($sql);
 
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                $pregunta = $row["pregunta"];
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $pregunta = $row["pregunta"];
 
-                
-                $sql_insert_respuestas = "INSERT INTO respuestas (id_pregunta, respuesta) VALUES ('$id_pregunta', '$respuesta')";
-                $conn->query($sql_insert_respuestas);
-                echo $sql_insert_respuestas;
+                    // Debug: Imprimir pregunta y respuesta a insertar
+                    echo '<h3>Pregunta:</h3>';
+                    echo '<p>' . htmlspecialchars($pregunta) . '</p>';
+                    echo '<h3>Respuesta:</h3>';
+                    echo '<p>' . htmlspecialchars($respuesta) . '</p>';
 
-           
-                if (strpos($pregunta, 'Empresa') !== false) {
-                    $empresa = $respuesta;
-                } elseif (strpos($pregunta, 'Cual es tu nombre') !== false) {
-                    $nombre = $respuesta;
+                    $sql_insert_respuestas = "INSERT INTO respuestas (id_registro, id_pregunta, respuesta) VALUES ('$id_registro', '$id_pregunta', '$respuesta')";
+                    
+                    // Debug: Imprimir consulta SQL de inserción
+                    echo '<h3>Consulta SQL de Inserción:</h3>';
+                    echo '<p>' . htmlspecialchars($sql_insert_respuestas) . '</p>';
+
+                    if (!$conn->query($sql_insert_respuestas)) {
+                        echo "Error al guardar la respuesta: " . $conn->error;
+                        exit;
+                    }
+
+                    if (strpos($pregunta, 'Empresa') !== false) {
+                        $empresa = $respuesta;
+                    } elseif (strpos($pregunta, 'Cual es tu nombre') !== false) {
+                        $nombre = $respuesta;
+                    }
+                } else {
+                    echo "Pregunta no encontrada para id_pregunta: $id_pregunta";
                 }
+            } else {
+                echo "id_pregunta inválido: $id_pregunta";
             }
-    } 
-       
         }
-        if ($nombre && $empresa)
-         {
-            $sql = "INSERT INTO reg_visit (nombre, empresa) VALUES ('$nombre', '$empresa')";
+
+        if ($empresa && $nombre) {
+            $sql = "INSERT into reg_visit (empresa, nombre) Values ( '$empresa', '$nombre')";
+            
+            // Debug: Imprimir consulta SQL de actualización
+            echo '<h3>Consulta SQL de Actualización:</h3>';
+            echo '<p>' . htmlspecialchars($sql) . '</p>';
 
             if ($conn->query($sql) === TRUE) {
                 echo "Respuestas guardadas correctamente";
-                
             } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
+                echo "Error al actualizar reg_visit: " . $conn->error;
             }
         } else {
             echo "Faltan algunas respuestas específicas. Asegúrate de completar todas las preguntas.";
@@ -59,11 +84,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "No se recibieron respuestas válidas.";
     }
 
-
-exit;
-
- //header('Location: Index.php');
-
+    exit;
+}
 
 $conn->close();
 ?>
+ 
