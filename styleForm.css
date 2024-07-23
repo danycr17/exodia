@@ -1,4 +1,13 @@
 
+
+.title-container h1 {
+    margin: 10px;
+    font-size: 2.5em;
+    font-weight: bold;
+    flex: 3;
+    text-align: center; /* Asegurarse de que el texto esté centrado */
+}
+
         body {   
             background-image: url('1.jpg');
             background-size: cover;
@@ -16,16 +25,22 @@
         }
 
         .titulo {
-            width: 70%;
-            background-color: #2ecc71;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            font-weight: bold;
-            border-radius: 15px;
+            background-color: #28a745;
+    color: white;
+    text-align: center; /* Centrar el texto */
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 10px; /* Añadir espacio superior */
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+    margin: 10px;
+    font-size: 2.5em;
+    font-weight: bold;
+    flex: 3;
+    text-align: center; /* Asegurarse de que el texto esté centrado */
         }
 
         form {

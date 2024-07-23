@@ -4,26 +4,21 @@
     <link rel="stylesheet" href="styleForm.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Fomulario</title>
 </head>
 <body>
 
 <?php
+
+
 include "./conexion/conexion.php";
 include "funciones.php";
-session_start();
 
-if (!isset($_SESSION['id_registro'])) {
-    $_SESSION['id_registro'] = bin2hex(openssl_random_pseudo_bytes(16));
-}
+session_start();
 
 $id_registro = $_SESSION['id_registro'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['mostrar_segundo_formulario'])) {
-    formularioDos($conn, 5, $id_registro, true, 0);
-    exit;
-}
-
+// Verificar si el id_registro ya existe en la base de datos
 $sql_check = "SELECT COUNT(*) as count FROM reg_visit WHERE id_registro = '$id_registro'";
 $result_check = $conn->query($sql_check);
 $row_check = $result_check->fetch_assoc();
@@ -40,6 +35,9 @@ if ($row_check['count'] == 0) {
     echo "$id_registro";
 }
 
+
+
+
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -54,9 +52,6 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
 
     $sql_preguntas = "SELECT id_pregunta, pregunta, tipo_pregunta, conf FROM preguntas WHERE id_encuesta = $id_encuesta";
     $result_preguntas = $conn->query($sql_preguntas);
-
-
-    
 
     if ($result_preguntas->num_rows > 0) {
         echo '<table border="1">';
@@ -88,12 +83,6 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
             $contador++;
         }
         echo '</table>';
-        if ($esUltimaEncuesta) {
-            echo '<br><input type="submit" value="Enviar respuestas" id="submit_encuesta_' . $id_encuesta . '">';
-        } else {
-            echo '<br><input type="button" id="siguiente_pregunta_' . $id_encuesta . '" value="Siguiente pregunta" onclick="mostrarSiguienteFormulario(' . $id_encuesta . ', \'' . $id_registro . '\')">';
-        }    echo '<br><input type="submit" value="Enviar respuestas" id="submit_encuesta_' . $id_encuesta . '">';
-        echo '</form>';
     } else {
         echo "Sin resultados";
     }
@@ -109,6 +98,8 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
     ?>
     <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
 </form>
+
+
 
 </body>
 </html>
