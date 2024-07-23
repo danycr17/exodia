@@ -46,7 +46,7 @@ function mostrarFormulario($conn, $id_encuesta, $id_registro, $esUltimaEncuesta,
     $result_preguntas = $conn->query($sql_preguntas);
 
 
-    
+
 
     if ($result_preguntas->num_rows > 0) {
         echo '<form id="encuesta_form_' . $id_encuesta . '" action="procesar_respuestas.php" method="POST">';
@@ -80,11 +80,14 @@ function mostrarFormulario($conn, $id_encuesta, $id_registro, $esUltimaEncuesta,
             $contador++;
         }
         echo '</table>';
+        
         if ($esUltimaEncuesta) {
             echo '<br><input type="submit" value="Enviar respuestas" id="submit_encuesta_' . $id_encuesta . '">';
         } else {
-            echo '<br><input type="button" id="siguiente_pregunta_' . $id_encuesta . '" value="Siguiente pregunta" onclick="mostrarSiguienteFormulario(' . $id_encuesta . ', \'' . $id_registro . '\')">';
-        }    echo '<br><input type="submit" value="Enviar respuestas" id="submit_encuesta_' . $id_encuesta . '">';
+           
+        }  
+        
+        echo '<br><input type="submit" value="Enviar respuestas" id="submit_encuesta_' . $id_encuesta . '">';
         echo '</form>';
     } else {
         echo "Sin resultados";
