@@ -4,13 +4,11 @@
     <link rel="stylesheet" href="styleForm.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fomulario</title>
+    <title>Formulario</title>
 </head>
 <body>
 
 <?php
-
-
 include "./conexion/conexion.php";
 include "funciones.php";
 
@@ -18,27 +16,7 @@ session_start();
 
 $id_registro = $_SESSION['id_registro'];
 
-// Verificar si el id_registro ya existe en la base de datos
-$sql_check = "SELECT COUNT(*) as count FROM reg_visit WHERE id_registro = '$id_registro'";
-$result_check = $conn->query($sql_check);
-$row_check = $result_check->fetch_assoc();
-
-if ($row_check['count'] == 0) {
-    $sql = "INSERT INTO reg_visit (id_registro) VALUES ('$id_registro')";
-    if ($conn->query($sql) === TRUE) {
-        echo "Sesión almacenada correctamente. ID: " . $conn->insert_id;
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-    }
-} else {
-    echo "El id_registro ya existe en la base de datos.";
-    echo "$id_registro";
-}
-
-
-
-
-function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo) {
+function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
 
@@ -65,20 +43,19 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
             echo '>';
             echo '<td>', htmlspecialchars($row["pregunta"]), '</td>';
 
+            echo '<td>';
             if ($row["tipo_pregunta"] === 'text') {
-                echo '<td>', crearCampoLibre($row["id_pregunta"]), '</td>';
+                echo crearCampoLibre($row["id_pregunta"], $form_num);
             } elseif ($row["tipo_pregunta"] === 'lista') {
-                $campo_lista = crearCampoLista($conn, $row["id_pregunta"], $row["conf"]);
-                echo '<td>', $campo_lista, '</td>';
+                echo crearCampoLista($conn, $row["id_pregunta"], $row["conf"], $form_num);
             } elseif ($row["tipo_pregunta"] === 'checkbox') {
-                $campo_checkbox = crearCampoCheckbox($conn, $row["id_pregunta"], $row["conf"]);
-                echo '<td>', $campo_checkbox, '</td>';
+                echo crearCampoCheckbox($conn, $row["id_pregunta"], $row["conf"], $form_num);
             } elseif ($row["tipo_pregunta"] === 'radio') {
-                $campo_radio = crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]);
-                echo '<td>', $campo_radio, '</td>';
+                echo crearCampoRadio($conn, $row["id_pregunta"], $row["conf"], $form_num);
             } else {
-                echo '<td>Tipo de pregunta no soportado</td>';
+                echo 'Tipo de pregunta no soportado';
             }
+            echo '</td>';
             echo '</tr>';
             $contador++;
         }
@@ -87,19 +64,19 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
         echo "Sin resultados";
     }
 }
-
 ?>
 
+<!-- Mostrar el ID de registro -->
+<p>ID de Registro: <?php echo htmlspecialchars($id_registro); ?></p>
+
 <form id="encuesta_form" action="procesar_respuestas.php" method="POST">
-    <input type="hidden" name="id_registro" value="<?php echo $id_registro; ?>">
+    <input type="hidden" name="id_registro" value="<?php echo htmlspecialchars($id_registro); ?>">
     <?php
-    formulario($conn, 4, $id_registro, 0, 'Encuesta Principal');
-    formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria');
+    formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1);
+    formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2);
     ?>
     <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
 </form>
-
-
 
 </body>
 </html>
