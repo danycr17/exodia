@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Debug: Imprimir id_registro recibido
         echo '<h3>ID Registro Recibido:</h3>';
-        echo '<p>' . htmlspecialchars($id_registro) . '</p>';
+        echo '<p>' .($id_registro) . '</p>';
 
         foreach ($respuestas as $id_pregunta => $respuesta) {
             $id_pregunta = (int)$id_pregunta;
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $respuesta = $conn->real_escape_string($respuesta);
             }
 
-            if ($id_pregunta > 0) {
+            if ($id_pregunta ) {
                 $sql = "SELECT pregunta FROM preguntas WHERE id_pregunta = $id_pregunta";
                 $result = $conn->query($sql);
 
@@ -37,15 +37,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     // Debug: Imprimir pregunta y respuesta a insertar
                     echo '<h3>Pregunta:</h3>';
-                    echo '<p>' . htmlspecialchars($pregunta) . '</p>';
+                    echo '<p>' .($pregunta) . '</p>';
                     echo '<h3>Respuesta:</h3>';
-                    echo '<p>' . htmlspecialchars($respuesta) . '</p>';
+                    echo '<p>' .($respuesta) . '</p>';
 
                     $sql_insert_respuestas = "INSERT INTO respuestas (id_registro, id_pregunta, respuesta) VALUES ('$id_registro', '$id_pregunta', '$respuesta')";
                     
                     // Debug: Imprimir consulta SQL de inserción
                     echo '<h3>Consulta SQL de Inserción:</h3>';
-                    echo '<p>' . htmlspecialchars($sql_insert_respuestas) . '</p>';
+                    echo '<p>' .($sql_insert_respuestas) . '</p>';
 
                     if (!$conn->query($sql_insert_respuestas)) {
                         echo "Error al guardar la respuesta: " . $conn->error;
@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Debug: Imprimir consulta SQL de actualización
             echo '<h3>Consulta SQL de Actualización:</h3>';
-            echo '<p>' . htmlspecialchars($sql) . '</p>';
+            echo '<p>' .($sql) . '</p>';
 
             if ($conn->query($sql) === TRUE) {
                 echo "Respuestas guardadas correctamente";
