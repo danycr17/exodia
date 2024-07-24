@@ -36,8 +36,6 @@ if ($row_check['count'] == 0) {
 }
 
 
-
-
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -98,7 +96,6 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
     ?>
     <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
 </form>
-
 
 
 </body>
