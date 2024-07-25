@@ -24,9 +24,6 @@ if (isset($_SESSION['id_registro'])) {
  
 }
 
-
-
-
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -76,10 +73,8 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
             echo "Sin resultados";
             }
             }
-
           
 ?>
-
 
 <form id="encuesta_form" action="procesar_respuestas.php" method="POST">
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
