@@ -24,6 +24,9 @@ if (isset($_SESSION['id_registro'])) {
  
 }
 
+
+
+
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -44,11 +47,7 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
         echo '<tr><th>Pregunta</th><th>Respuesta</th></tr>';
         $contador = $contadorInicial;
         while ($row = $result_preguntas->fetch_assoc()) {
-            echo '<tr class="pregunta"';
-            if ($contador >= 3) {
-                echo ' style="display: none;"';
-            }
-            echo '>';
+            echo '<tr class="pregunta">';
             echo '<td>', htmlspecialchars($row["pregunta"]), '</td>';
 
             echo '<td>';
@@ -59,32 +58,40 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
             } elseif ($row["tipo_pregunta"] === 'checkbox') {
                 echo crearCampoCheckbox($conn, $row["id_pregunta"], $row["conf"], $form_num);
             } elseif ($row["tipo_pregunta"] === 'radio') {
-                // Adjust the function call to match the function definition
-                echo crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]); // Assuming crearCampoRadio accepts 3 arguments
+                echo crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]); 
             } else {
                 echo 'Tipo de pregunta no soportado';
             }
             echo '</td>';
             echo '</tr>';
             $contador++;
-            }
-            echo '</table>';
-            } else {
-            echo "Sin resultados";
-            }
-            }
-
-          
+        }
+        echo '</table>';
+    } else {
+        echo "Sin resultados";
+    }
+}
 ?>
 
-
-<form id="encuesta_form" action="procesar_respuestas.php" method="POST">
+<?php if (!$form1_completed): ?>
+<!-- Formulario para Encuesta Principal -->
+<form id="encuesta_form_principal" action="" method="POST">
+    <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
+    <input type="hidden" name="form_num" value="1">
+    <?php formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1); ?>
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_principal">
+</form>
+<?php else: ?>
+<!-- Formulario para Encuesta Secundaria -->
+<form id="encuesta_form_secundaria" action="" method="POST">
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
     <?php
     formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1);
+    formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2);
     ?>
-    <br><input type="submit" value="siguiente pregunta" id="submit_encuesta">
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
 </form>
+<?php endif; ?>
 
 </body>
 </html>
