@@ -1,4 +1,4 @@
-este archivo de  formulario esta reciviendo las respuestas <?php
+<?php
 include "./conexion/conexion.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $respuesta = $conn->real_escape_string($respuesta);
             }
 
-            if ($id_pregunta ) {
+            if ($id_pregunta) {
                 $sql = "SELECT pregunta FROM preguntas WHERE id_pregunta = $id_pregunta";
                 $result = $conn->query($sql);
 
@@ -66,9 +66,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if ($empresa && $nombre) {
-            $sql = "INSERT into reg_visit (empresa, nombre) Values ( '$empresa', '$nombre')";
+            $sql = "INSERT into reg_visit (empresa, nombre) Values ('$empresa', '$nombre')";
             
-            // Debug: Imprimir consulta SQL de actualización
             echo '<h3>Consulta SQL de Actualización:</h3>';
             echo '<p>' .($sql) . '</p>';
 
@@ -89,4 +88,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn->close();
 ?>
- 
