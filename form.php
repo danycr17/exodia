@@ -24,9 +24,6 @@ if (isset($_SESSION['id_registro'])) {
  
 }
 
-
-
-
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -85,9 +82,8 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
     <?php
     formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1);
-    formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2);
     ?>
-    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
+    <br><input type="submit" value="siguiente pregunta" id="submit_encuesta">
 </form>
 
 </body>
