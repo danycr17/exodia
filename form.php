@@ -5,30 +5,26 @@ include "funciones.php";
 session_start();
 
 // Asegúrate de que id_registro se establezca correctamente en la sesión
-if (!isset($_SESSION['id_registro'])) {
-    $_SESSION['id_registro'] = uniqid(); // Genera un ID único para la sesión
+if (isset($_SESSION['id_registro'])) {
+    $id_registro = $_SESSION['id_registro'];
+} else {
+    $id_registro = null; // O cualquier valor por defecto que prefieras
+    $_SESSION['id_registro'] = $id_registro;
 }
-$id_registro = $_SESSION['id_registro'];
 
-// Lógica para determinar si el primer formulario ha sido completado
+// Procesar el formulario cuando se envía
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Aquí puedes agregar la lógica para procesar las respuestas del formulario
+    // Por ejemplo, guardar las respuestas en la base de datos
+
+    // Después de procesar el formulario, actualiza $form1_completed
     if (isset($_POST['form_num']) && $_POST['form_num'] == 1) {
-        // Aquí puedes procesar los datos del primer formulario
-        // Actualiza la sesión para indicar que el primer formulario ha sido completado
         $_SESSION['form1_completed'] = true;
-        // Redirige al mismo script para evitar el resubido del formulario
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit;
-    } elseif (isset($_POST['form_num']) && $_POST['form_num'] == 2) {
-        // Aquí puedes procesar los datos del segundo formulario
-        // Actualiza la sesión o realiza cualquier otra lógica necesaria
-        echo "Segundo formulario completado";
-        exit;
     }
 }
 
-// Determina si el primer formulario ha sido completado
-$form1_completed = isset($_SESSION['form1_completed']) && $_SESSION['form1_completed'] === true;
+// Aquí se debería definir $form1_completed basado en la sesión
+$form1_completed = isset($_SESSION['form1_completed']) ? $_SESSION['form1_completed'] : false;
 
 // Función para mostrar el formulario
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
@@ -87,6 +83,14 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
 </head>
 <body>
 
+<?php
+// Depuración: Verifica el estado de $form1_completed
+echo "<pre>";
+echo "form1_completed: " . ($form1_completed ? 'true' : 'false') . "\n";
+echo "id_registro: " . htmlspecialchars($id_registro) . "\n";
+echo "</pre>";
+?>
+
 <?php if (!$form1_completed): ?>
 <!-- Formulario para Encuesta Principal -->
 <form id="encuesta_form_principal" action="" method="POST">
@@ -99,11 +103,10 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
 <!-- Formulario para Encuesta Secundaria -->
 <form id="encuesta_form_secundaria" action="" method="POST">
     <input type="hidden" name="id_registro" value="<?php echo htmlspecialchars($id_registro); ?>">
-    <input type="hidden" name="form_num" value="2">
     <?php
     formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2);
     ?>
-    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_secundaria">
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
 </form>
 <?php endif; ?>
 
