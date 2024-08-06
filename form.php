@@ -101,7 +101,7 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
     <input type="hidden" name="id_registro" value="<?php echo htmlspecialchars($id_registro); ?>">
     <input type="hidden" name="form_num" value="2">
     <?php
-    formulario($conn, 4, $id_registro, 0, 'Encuesta Secundaria', 2);
+    formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2);
     ?>
     <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_secundaria">
 </form>
