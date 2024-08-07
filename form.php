@@ -28,22 +28,6 @@ echo "ID de registro: " . $_SESSION['id_registro'] . "<br>";
 // Check if the first form has been completed
 $form1_completed = isset($_SESSION['form1_completed']) ? $_SESSION['form1_completed'] : false;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['form_num']) && $_POST['form_num'] == 1) {
-        // Mark the first form as completed
-        $_SESSION['form1_completed'] = true;
-        $form1_completed = true;
-    } elseif (isset($_POST['form_num']) && $_POST['form_num'] == 2) {
-        // Process the second form as needed
-        // For now, just display a message
-        echo "Formulario secundario completado.";
-        // Reset session or perform any other necessary actions
-        session_unset();
-        session_destroy();
-        exit();
-    }
-}
-
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -92,21 +76,67 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
 
 <?php if (!$form1_completed): ?>
 <!-- Formulario para Encuesta Principal -->
-<form id="encuesta_form_principal" action="" method="POST">
+<form id="encuesta_form_principal">
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
     <input type="hidden" name="form_num" value="1">
     <?php formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1); ?>
-    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_principal">
+    <br><button type="button" onclick="finalizarFormulario()">Finalizar Encuesta Principal</button>
 </form>
 <?php else: ?>
 <!-- Formulario para Encuesta Secundaria -->
-<form id="encuesta_form_secundaria" action="" method="POST">
+<form id="encuesta_form_secundaria">
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
     <input type="hidden" name="form_num" value="2">
     <?php formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2); ?>
-    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_secundaria">
+    <br><button type="button" onclick="finalizarFormulario()">Finalizar Encuesta Secundaria</button>
 </form>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[type="text"], select, input[type="checkbox"], input[type="radio"]').forEach(function(input) {
+        input.addEventListener('change', function(event) {
+            let formData = new FormData();
+            formData.append('id_registro', '<?php echo($id_registro); ?>');
+            formData.append('form_num', event.target.closest('form').querySelector('input[name="form_num"]').value);
+            formData.append(event.target.name, event.target.value);
+
+            fetch('guardar_respuesta.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data); // Puedes manejar la respuesta del servidor aquí
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+
+function finalizarFormulario() {
+    let form = document.querySelector('form');
+    let formData = new FormData(form);
+
+    fetch('finalizar_formulario.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'Formulario completado.' || data === 'Formulario principal completado.') {
+            window.location.reload();
+        } else {
+            console.log(data); // Maneja los mensajes del servidor
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
 
 </body>
 </html>
