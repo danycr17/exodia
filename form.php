@@ -3,30 +3,37 @@ include "./conexion/conexion.php";
 include "funciones.php";
 
 session_start();
-
-// Asegúrate de que id_registro se establezca correctamente en la sesión
 if (isset($_SESSION['id_registro'])) {
     $id_registro = $_SESSION['id_registro'];
 } else {
-    $id_registro = null; // O cualquier valor por defecto que prefieras
+    $id_registro = uniqid(); // Generar un ID único
     $_SESSION['id_registro'] = $id_registro;
 }
 
-// Procesar el formulario cuando se envía
+// Procesar el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Aquí puedes agregar la lógica para procesar las respuestas del formulario
-    // Por ejemplo, guardar las respuestas en la base de datos
-
-    // Después de procesar el formulario, actualiza $form1_completed
-    if (isset($_POST['form_num']) && $_POST['form_num'] == 1) {
-        $_SESSION['form1_completed'] = true;
+    echo "<pre>Formulario enviado\n";
+    print_r($_POST);
+    echo "</pre>";
+    if (isset($_POST['form_num'])) {
+        if ($_POST['form_num'] == 1) {
+            $_SESSION['form1_completed'] = true;
+            echo "<pre>form1_completed se ha establecido a true</pre>";
+        } elseif ($_POST['form_num'] == 2) {
+            $_SESSION['form2_completed'] = true;
+            echo "<pre>form2_completed se ha establecido a true</pre>";
+        }
     }
 }
 
-// Aquí se debería definir $form1_completed basado en la sesión
 $form1_completed = isset($_SESSION['form1_completed']) ? $_SESSION['form1_completed'] : false;
+$form2_completed = isset($_SESSION['form2_completed']) ? $_SESSION['form2_completed'] : false;
 
-// Función para mostrar el formulario
+if ($form1_completed && $form2_completed) {
+    session_destroy();
+    echo "<pre>Sesión destruida</pre>";
+}
+
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
     $result_nombre = $conn->query($sql_nombre);
@@ -43,6 +50,7 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
     $result_preguntas = $conn->query($sql_preguntas);
 
     if ($result_preguntas->num_rows > 0) {
+        echo '<div class="contenedor-respuestas">';
         echo '<table border="1">';
         echo '<tr><th>Pregunta</th><th>Respuesta</th></tr>';
         $contador = $contadorInicial;
@@ -67,12 +75,12 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
             $contador++;
         }
         echo '</table>';
+        echo '</div>';
     } else {
         echo "Sin resultados";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,17 +88,18 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
 </head>
 <body>
 
 <?php
-// Depuración: Verifica el estado de $form1_completed
 echo "<pre>";
 echo "form1_completed: " . ($form1_completed ? 'true' : 'false') . "\n";
+echo "form2_completed: " . ($form2_completed ? 'true' : 'false') . "\n";
 echo "id_registro: " . htmlspecialchars($id_registro) . "\n";
 echo "</pre>";
 ?>
-
 <?php if (!$form1_completed): ?>
 <!-- Formulario para Encuesta Principal -->
 <form id="encuesta_form_principal" action="" method="POST">
@@ -99,16 +108,66 @@ echo "</pre>";
     <?php formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1); ?>
     <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_principal">
 </form>
-<?php else: ?>
+<?php elseif (!$form2_completed): ?>
 <!-- Formulario para Encuesta Secundaria -->
 <form id="encuesta_form_secundaria" action="" method="POST">
     <input type="hidden" name="id_registro" value="<?php echo htmlspecialchars($id_registro); ?>">
-    <?php
-    formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2);
-    ?>
-    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta">
+    <input type="hidden" name="form_num" value="2">
+    <?php formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2); ?>
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_secundaria">
 </form>
 <?php endif; ?>
+
+<div id="mensaje-confirmacion" class="mensaje-confirmacion" style="display: none;">
+    Respuestas guardadas correctamente.
+</div>
+<div id="mensaje-error" class="mensaje-error" style="display: none;">
+    Error al guardar las respuestas.
+</div>
+
+<style>
+        .contenedor-respuestas.guardado {
+            background-color: #d4edda; /* Color verde claro */
+        }
+        .contenedor-respuestas.error {
+            background-color: #f8d7da; /* Color rojo claro */
+        }
+        .mensaje-confirmacion {
+            color: green;
+            font-weight: bold;
+        }
+        .mensaje-error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+<script>
+    
+    $(document).ready(function() {
+    $('form input, form select, form textarea').on('input change', function() {
+        var formData = $(this).closest('form').serialize();
+        var contenedor = $(this).closest('.contenedor-respuestas');
+        console.log('Datos del formulario:', formData); // Mensaje de depuración
+
+        $.ajax({
+            type: 'POST',
+            url: 'procesar_formulario.php',
+            data: formData,
+            success: function(response) {
+                console.log('Datos enviados: ' + response);
+                contenedor.removeClass('error').addClass('guardado');
+                $('#mensaje-confirmacion').show().delay(3000).fadeOut();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', error); // Mensaje de depuración
+                contenedor.removeClass('guardado').addClass('error');
+                $('#mensaje-error').show().delay(3000).fadeOut();
+            }
+        });
+    });
+});
+
+</script>
 
 </body>
 </html>
