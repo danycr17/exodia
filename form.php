@@ -1,23 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="styleForm.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario</title>
-</head>
-<body>
-
 <?php
 include "./conexion/conexion.php";
 include "funciones.php";
 
 session_start();
 
+// Asegúrate de que id_registro se establezca correctamente en la sesión
 if (isset($_SESSION['id_registro'])) {
     $id_registro = $_SESSION['id_registro'];
 } else {
-    $id_registro = null; 
+    $id_registro = null; // O cualquier valor por defecto que prefieras
     $_SESSION['id_registro'] = $id_registro;
 }
 
@@ -27,6 +18,22 @@ echo "ID de registro: " . $_SESSION['id_registro'] . "<br>";
 
 // Check if the first form has been completed
 $form1_completed = isset($_SESSION['form1_completed']) ? $_SESSION['form1_completed'] : false;
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['form_num']) && $_POST['form_num'] == 1) {
+        // Mark the first form as completed
+        $_SESSION['form1_completed'] = true;
+        $form1_completed = true;
+    } elseif (isset($_POST['form_num']) && $_POST['form_num'] == 2) {
+        // Process the second form as needed
+        // For now, just display a message
+        echo "Formulario secundario completado.";
+        // Reset session or perform any other necessary actions
+        session_unset();
+        session_destroy();
+        exit();
+    }
+}
 
 function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo, $form_num) {
     $sql_nombre = "SELECT nombre FROM form WHERE id_encuesta = $id_encuesta";
@@ -59,7 +66,7 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
             } elseif ($row["tipo_pregunta"] === 'checkbox') {
                 echo crearCampoCheckbox($conn, $row["id_pregunta"], $row["conf"], $form_num);
             } elseif ($row["tipo_pregunta"] === 'radio') {
-                echo crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]); 
+                echo crearCampoRadio($conn, $row["id_pregunta"], $row["conf"]);
             } else {
                 echo 'Tipo de pregunta no soportado';
             }
@@ -74,9 +81,27 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styleForm.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+</head>
+<body>
+
+<?php
+// Depuración: Verifica el estado de $form1_completed
+echo "<pre>";
+echo "form1_completed: " . ($form1_completed ? 'true' : 'false') . "\n";
+echo "id_registro: " . htmlspecialchars($id_registro) . "\n";
+echo "</pre>";
+?>
+
 <?php if (!$form1_completed): ?>
 <!-- Formulario para Encuesta Principal -->
-<form id="encuesta_form_principal">
+<form id="encuesta_form_principal" action="" method="POST">
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
     <input type="hidden" name="form_num" value="1">
     <?php formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1); ?>
@@ -84,11 +109,11 @@ function formulario($conn, $id_encuesta, $id_registro, $contadorInicial, $titulo
 </form>
 <?php else: ?>
 <!-- Formulario para Encuesta Secundaria -->
-<form id="encuesta_form_secundaria">
+<form id="encuesta_form_secundaria" action="" method="POST">
     <input type="hidden" name="id_registro" value="<?php echo($id_registro); ?>">
     <input type="hidden" name="form_num" value="2">
     <?php formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2); ?>
-    <br><button type="button" onclick="finalizarFormulario()">Finalizar Encuesta Secundaria</button>
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_secundaria">
 </form>
 <?php endif; ?>
 
