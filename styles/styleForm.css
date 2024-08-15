@@ -4,11 +4,11 @@
     font-size: 2.5em;
     font-weight: bold;
     flex: 3;
-    text-align: center; /* Asegurarse de que el texto esté centrado */
+    text-align: center; 
 }
 
         body {   
-            background-image: url('1.jpg');
+            background-image: url('../img/1.jpg');
             background-size: cover;
             background-repeat: no-repeat;  
             background-position: top;
@@ -53,7 +53,7 @@
 form {
     max-width: 1200px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.514);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -63,12 +63,12 @@ form {
 
 /* Animación de fade-in */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(50 px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 /* Estilo del botón de enviar */
-input[type="submit"] {
+button [type="submit"] {
     background-color: #2ecc71;
     color: #ffffff;
     border: none;
@@ -82,7 +82,7 @@ input[type="submit"] {
     width: 100%;
 }
 
-input[type="submit"]:hover {
+button[type="submit"]:hover {
     background-color: #27ae60;
     transform: scale(1.05);
 }

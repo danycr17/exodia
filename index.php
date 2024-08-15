@@ -5,51 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>Index</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
-<div class="title-container">
-        <h1>Seguridad POSCO Puebla </h1>
+    <div class="title-container text-center my-4">
+        <h1>Seguridad POSCO Puebla</h1>
     </div>
 
     <div class="container">
-       <div class="button-container">
-     
-            <?php
-            include "./conexion/conexion.php";
+        <div class="row">
+            <div class="col-md-6 button-container mb-4">
+                <?php
+                include "./conexion/conexion.php";
 
-            function generarBotones($conn) {
-                $sql = "SELECT id_encuesta, nombre, url FROM form WHERE id_encuesta != 4";
-                $result = $conn->query($sql);
+                function generarBotones($conn) {
+                    $sql = "SELECT id_encuesta, nombre, url FROM encuestas WHERE id_encuesta != 4";
+                    $result = $conn->query($sql);
 
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $url = $row["url"]; // Obtén la URL desde la base de datos
-                        echo '<button onclick="window.location.href=\'' . $url . '\'">' . htmlspecialchars($row["nombre"], ENT_QUOTES, 'UTF-8') . '</button>';
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            $id_encuesta = $row["id_encuesta"];
+                            $url = $row["url"];
+                            // Crear la URL para redirigir a la presentación de Canva con el parámetro id_encuesta
+                            $url_con_id = $url . "?id_encuesta=" . $id_encuesta;
+                            echo '<a href="' . htmlspecialchars($url_con_id, ENT_QUOTES, 'UTF-8') . '" class="btn btn-success mb-4 btn-custom">' . htmlspecialchars($row["nombre"], ENT_QUOTES, 'UTF-8') . '</a><br>';
+                        }
+                    } else {
+                        echo '<p>No hay resultados</p>';
                     }
-                } else {
-                    echo "No hay resultados";
                 }
-               
-            }
 
-            // Generar los botones
-            generarBotones($conn);
-          
-          
+                // Generar los botones
+                generarBotones($conn);
 
-            // Cerrar la conex
-            $conn->close();
-            ?>
-
-      <a href=" form.php?id_encuesta=4"> <button type="button">Prueba</button></a>
-
-
-        </div>
-        <div class="image-container">
-            <img src="img/posco1.PNG" style="max-width: 100%;">
+                // Cerrar la conexión
+                $conn->close();
+                ?>
+            </div>
+            <div class="col-md-6 image-container">
+                <img src="img/posco1.PNG" class="img-fluid" alt="POSCO Puebla">
+            </div>
         </div>
     </div>
-    
 </body>
 </html>

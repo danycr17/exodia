@@ -1,5 +1,5 @@
 <?php
-include "./conexion/conexion.php";
+include "../conexion/conexion.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_registro = $_POST['id_registro'];

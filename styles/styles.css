@@ -1,0 +1,225 @@
+@media (max-width: 768px) {
+    
+}
+.image-container {
+    animation: scaleUpDown 1s ease infinite alternate;
+}
+
+.title-container h1 {
+    margin: 10;
+    font-size: 2.5em;
+    font-weight: bold;
+    flex: 3;
+}
+.title-container {
+    background-color: #28a745;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 20px; /* Añadir espacio superior */
+}
+@keyframes scaleUpDown {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+
+/* Estilos para pantallas grandes (laptop y PC de escritorio) */
+@media (min-width: 769px) {
+    .container {
+        display: flex;
+        justify-content: space-between; /* Espacio entre los contenedores */
+        align-items: center;
+    }
+
+    .image-container {
+        flex: 1; /* Ocupa la mitad del ancho */
+        order: 2; /* Cambia el orden para que aparezca después del contenedor de preguntas */
+    }
+
+    .button-container {
+        flex: 1; /* Ocupa la mitad del ancho */
+    }
+}
+
+/* Estilos para pantallas pequeñas (dispositivos móviles) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Cambio a dirección vertical */
+        justify-content: flex-start; /* Alineación arriba */
+        align-items: center;
+    }
+
+    .image-container {
+        order: 1; /* Cambia el orden para que aparezca antes del contenedor de preguntas */
+    }
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column; /* Cambio a dirección vertical */
+    justify-content: flex-start; /* Alineación arriba */
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('../img/brg.jpg');
+    background-size: cover;
+    background-size: 100% 100%;
+    background-repeat: repeat;
+
+}
+
+.image-container {
+    flex: 2;
+    text-align: center;
+}
+
+
+
+.button-container {
+    flex: 3;
+    text-align: left;
+    
+}.button-container button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 25px;
+    font-size: 20px;
+    background-color: #2c9a3d; /* Color con opacidad */
+    color: white;
+    border: none;
+    border-radius: 10px; /* Bordes curvos */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-container button:hover {
+    background-color: #69ff05; /* Color al pasar el cursor */
+}
+
+.container {
+    display: flex ;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    border-radius: 20px;
+    margin: auto;
+    background: #b3f9bd;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center; 
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.619), rgba(35, 138, 42, 0.5));
+   
+}
+
+.btn-green {
+    background-color: #28a745; /* Color verde */
+    border-color: #28a745;
+    width: 100%; /* Ancho del botón */
+    max-width: 500px; /* Ancho máximo del botón */
+    height: 60px; /* Altura del botón */
+    text-align: center; /* Centrar el texto dentro del botón */
+    margin-bottom: 25px; /* Espacio entre los botones */
+    font-size: 18px; /* Tamaño del texto en el botón */
+}
+.btn-green:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente los botones */
+    justify-content: center; /* Centra verticalmente los botones en la columna */
+    height: 100vh; /* Ocupa toda la altura de la ventana del navegador */
+}
+.image-container {
+    display: flex;
+    align-items: center; /* Centra verticalmente la imagen en su contenedor */
+    justify-content: center; /* Centra horizontalmente la imagen en su contenedor */
+}
+/* styles.css */
+
+.btn-green {
+    background-color: #28a745; /* Color verde */
+    border-color: #28a745;
+    width: 100%; /* Ancho del botón */
+    max-width: 500px; /* Ancho máximo del botón */
+    height: 60px; /* Altura del botón */
+    text-align: center; /* Centrar el texto dentro del botón */
+    margin-bottom: 25px; /* Espacio entre los botones */
+    font-size: 18px; /* Tamaño del texto en el botón */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-green:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente los botones */
+    justify-content: center; /* Centra verticalmente los botones en la columna */
+    height: 100vh; /* Ocupa toda la altura de la ventana del navegador */
+}
+
+.image-container {
+    display: flex;
+    align-items: center; /* Centra verticalmente la imagen en su contenedor */
+    justify-content: center; /* Centra horizontalmente la imagen en su contenedor */
+}
+
+/* Estilo general de los botones */
+.btn-custom {
+    display: inline-block;
+    width: 100%; /* Ocupa todo el ancho del contenedor padre */
+    max-width: 600px; /* Ajusta el ancho máximo según sea necesario */
+    height: 100px; /* Ajusta la altura según sea necesario */
+    font-size: 1.2em; /* Ajusta el tamaño del texto */
+    text-align: center;
+    line-height: 100px; /* Alinea verticalmente el texto */
+    padding: 0 20px; /* Espacio interno a los lados */
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Espacio entre botones */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+    text-transform: uppercase; /* Texto en mayúsculas */
+    overflow: hidden; /* Oculta el texto que se salga del contenedor */
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es demasiado largo */
+    transition: background-color 0.3s, transform 0.3s; /* Efectos de transición */
+}
+
+/* Cambiar el color de fondo y el hover */
+.btn-custom:hover {
+    background-color: #4CAF50; /* Color de fondo al pasar el ratón */
+    transform: translateY(-3px); /* Efecto de elevación al pasar el ratón */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada al pasar el ratón */
+}
+
+/* Cambiar el color de fondo para botones deshabilitados */
+.btn-custom:disabled {
+    background-color: #e0e0e0;
+    color: #b0b0b0;
+    box-shadow: none;
+}
+
