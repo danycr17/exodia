@@ -1,3 +1,39 @@
+<?php
+include "./conexion/conexion.php";
+include "funciones.php";
+
+session_start();
+if (isset($_SESSION['id_registro'])) {
+    $id_registro = $_SESSION['id_registro'];
+} else {
+    $id_registro = uniqid(); 
+    $_SESSION['id_registro'] = $id_registro;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "<pre>Formulario enviado\n";
+    print_r($_POST);
+    echo "</pre>";
+    if (isset($_POST['form_num'])) {
+        if ($_POST['form_num'] == 1) {
+            $_SESSION['form1_completed'] = true;
+            echo "<pre>form1_completed se ha establecido a true</pre>";
+        } elseif ($_POST['form_num'] == 2) {
+            $_SESSION['form2_completed'] = true;
+            echo "<pre>form2_completed se ha establecido a true</pre>";
+        }
+    }
+}
+
+$form1_completed = isset($_SESSION['form1_completed']) ? $_SESSION['form1_completed'] : false;
+$form2_completed = isset($_SESSION['form2_completed']) ? $_SESSION['form2_completed'] : false;
+
+if ($form1_completed && $form2_completed) {
+    session_destroy();
+    echo "<pre>Sesión destruida</pre>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,199 +48,62 @@
      
 
 <?php
-include "./conexion/conexion.php";
-
-// Función para generar el formulario de registro dinámicamente
-function generarFormularioRegistro($conn) {
-    // Obtener preguntas de registro
-    $sql = "SELECT * FROM preguntas_registro";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        echo '<form action="" method="post">';
-        echo '<table class="table table-bordered">';
-        echo '<thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>';
-        echo '<tbody>';
-
-        while ($row = $result->fetch_assoc()) {
-            echo '<tr>';
-            echo '<td>' . htmlspecialchars($row['pregunta'], ENT_QUOTES, 'UTF-8') . '</td>';
-            echo '<td>';
-            switch ($row['tipo_pregunta']) {
-                case 'text':
-                    echo '<input type="text" class="form-control" id="pregunta_' . $row['id_pregunta'] . '" name="respuesta_' . $row['id_pregunta'] . '" required>';
-                    break;
-
-                case 'lista':
-                    echo '<select class="form-select" id="pregunta_' . $row['id_pregunta'] . '" name="respuesta_' . $row['id_pregunta'] . '" required>';
-                    // Obtener las opciones de la tabla pregunta_detalle basado en el grupo
-                    $opciones_sql = "SELECT nombre FROM pregunta_detalle WHERE grupo='" . $conn->real_escape_string($row['conf']) . "'";
-                    $opciones_result = $conn->query($opciones_sql);
-                    if ($opciones_result->num_rows > 0) {
-                        while ($opcion = $opciones_result->fetch_assoc()) {
-                            echo '<option value="' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '</option>';
-                        }
-                    }
-                    echo '</select>';
-                    break;
-            }
-            echo '</td>';
-            echo '</tr>';
-        }
-
-        echo '</tbody>';
-        echo '</table>';
-        echo '<button type="submit" class="btn btn-primary">Registrar</button>';
-        echo '</form>';
-    } else {
-        echo '<p>No hay preguntas de registro disponibles.</p>';
-    }
-}
-
-// Función para generar el formulario de encuesta dinámicamente
-function generarFormularioEncuesta($conn, $id_encuesta) {
-    // Obtener el título de la encuesta
-    $titulo_sql = "SELECT nombre FROM encuestas WHERE id_encuesta = ?";
-    $stmt = $conn->prepare($titulo_sql);
-    $stmt->bind_param("i", $id_encuesta);
-    $stmt->execute();
-    $titulo_result = $stmt->get_result();
-    $titulo = $titulo_result->fetch_assoc();
-
-    // Mostrar el título de la encuesta
-    if ($titulo) {
-        echo '<h2>' . htmlspecialchars($titulo['nombre'], ENT_QUOTES, 'UTF-8') . '</h2>';
-    } else {
-        echo '<h2>Encuesta no encontrada</h2>';
-    }
-
-    // Obtener preguntas de la encuesta
-    $sql = "SELECT * FROM preguntas WHERE id_encuesta = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_encuesta);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        echo '<form action="./procesos/procesar_encuesta.php?id_usuario=' . $_GET['id_usuario'] . '" method="post">';
-        echo '<table class="table table-bordered">';
-        echo '<thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>';
-        echo '<tbody>';
-
-        while ($row = $result->fetch_assoc()) {
-            echo '<tr>';
-            echo '<td>' . htmlspecialchars($row['pregunta'], ENT_QUOTES, 'UTF-8') . '</td>';
-            echo '<td>';
-            switch ($row['tipo_pregunta']) {
-                case 'text':
-                    echo '<input type="text" class="form-control" id="pregunta_' . $row['id_pregunta'] . '" name="respuesta_' . $row['id_pregunta'] . '" required>';
-                    break;
-
-                case 'lista':
-                    echo '<select class="form-select" id="pregunta_' . $row['id_pregunta'] . '" name="respuesta_' . $row['id_pregunta'] . '" required>';
-                    $opciones_sql = "SELECT nombre FROM pregunta_detalle WHERE grupo='" . $conn->real_escape_string($row['conf']) . "'";
-                    $opciones_result = $conn->query($opciones_sql);
-                    if ($opciones_result->num_rows > 0) {
-                        while ($opcion = $opciones_result->fetch_assoc()) {
-                            echo '<option value="' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '</option>';
-                        }
-                    }
-                    echo '</select>';
-                    break;
-
-                case 'checkbox':
-                    $opciones_sql = "SELECT nombre FROM pregunta_detalle WHERE grupo='" . $conn->real_escape_string($row['conf']) . "'";
-                    $opciones_result = $conn->query($opciones_sql);
-                    if ($opciones_result->num_rows > 0) {
-                        while ($opcion = $opciones_result->fetch_assoc()) {
-                            echo '<div><input type="checkbox" id="pregunta_' . $row['id_pregunta'] . '_' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '" name="respuesta_' . $row['id_pregunta'] . '[]" value="' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '"> ' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '</div>';
-                        }
-                    }
-                    break;
-
-                case 'radio':
-                    $opciones_sql = "SELECT nombre FROM pregunta_detalle WHERE grupo='" . $conn->real_escape_string($row['conf']) . "'";
-                    $opciones_result = $conn->query($opciones_sql);
-                    if ($opciones_result->num_rows > 0) {
-                        while ($opcion = $opciones_result->fetch_assoc()) {
-                            echo '<div><input type="radio" id="pregunta_' . $row['id_pregunta'] . '_' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '" name="respuesta_' . $row['id_pregunta'] . '" value="' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '"> ' . htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') . '</div>';
-                        }
-                    }
-                    break;
-            }
-            echo '</td>';
-            echo '</tr>';
-        }
-
-        echo '</tbody>';
-        echo '</table>';
-        echo '<button type="submit" class="btn btn-primary">Enviar</button>';
-        echo '</form>';
-    } else {
-        echo '<p>No hay preguntas disponibles para esta encuesta.</p>';
-    }
-}
-
-// Manejo del formulario enviado
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['respuesta_1'])) {
-        // Procesar el formulario de registro
-        $empresa = $_POST['respuesta_1'];
-        $nombre_completo = $_POST['respuesta_2'];
-        $area = $_POST['respuesta_3'];
-
-        $sql = "INSERT INTO usuarios_registro (empresa, nombre_completo, area) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $empresa, $nombre_completo, $area);
-
-        if ($stmt->execute()) {
-            // Obtener el ID del usuario insertado
-            $id_usuario = $stmt->insert_id;
-            // Obtener el id_encuesta de la URL original
-            $id_encuesta = intval($_GET['id_encuesta']);
-            // Redirigir para mostrar el formulario de encuesta correspondiente
-            header("Location: ".$_SERVER['PHP_SELF']."?id_usuario=$id_usuario&id_encuesta=$id_encuesta");
-            exit();
-        } else {
-            echo "Error al registrar los datos: " . $conn->error;
-        }
-    } elseif (isset($_POST['respuesta_'])) {
-        // Procesar respuestas del formulario de encuesta
-        $id_usuario = isset($_GET['id_usuario']) ? intval($_GET['id_usuario']) : 0;
-
-        foreach ($_POST as $key => $value) {
-            if (strpos($key, 'respuesta_') === 0) {
-                $id_pregunta = intval(substr($key, 10));
-                $respuesta = is_array($value) ? implode(", ", $value) : $value;
-
-                $sql = "INSERT INTO respuestas (id_usuario, id_pregunta, respuesta) VALUES (?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iis", $id_usuario, $id_pregunta, $respuesta);
-
-                if (!$stmt->execute()) {
-                    echo "Error al guardar la respuesta: " . $conn->error;
-                }
-            }
-        }
-
-        echo "Respuestas guardadas correctamente.";
-    }
-}
-
-else {
-    if (isset($_GET['id_usuario']) && isset($_GET['id_encuesta'])) {
-        // Mostrar formulario de encuesta
-        $id_encuesta = intval($_GET['id_encuesta']);
-        generarFormularioEncuesta($conn, $id_encuesta);
-    } else {
-        // Mostrar formulario de registro
-        generarFormularioRegistro($conn);
-    }
-}
-
-$conn->close();
+echo "<pre>";
+echo "form1_completed: " . ($form1_completed ? 'true' : 'false') . "\n";
+echo "form2_completed: " . ($form2_completed ? 'true' : 'false') . "\n";
+echo "id_registro: " .($id_registro) . "\n";
+echo "</pre>";
 ?>
+<?php if (!$form1_completed): ?>
+<!-- Formulario para Encuesta Principal -->
+<form id="encuesta_form_principal" action="" method="POST">
+    <input type="hidden" name="id_registro" value="<?php echo $id_registro; ?>">
+    <input type="hidden" name="form_num" value="1">
+    <?php formulario($conn, 4, $id_registro, 0, 'Encuesta Principal', 1); ?>
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_principal">
+</form>
+<?php elseif (!$form2_completed): ?>
+<!-- Formulario para Encuesta Secundaria -->
+<form id="encuesta_form_secundaria" action="" method="POST">
+    <input type="hidden" name="id_registro" value="<?php echo $id_registro; ?>">
+    <input type="hidden" name="form_num" value="2">
+    <?php formulario($conn, 5, $id_registro, 0, 'Encuesta Secundaria', 2); ?>
+    <br><input type="submit" value="Enviar respuestas" id="submit_encuesta_secundaria">
+</form>
+<?php endif; ?>
 
+<div id="mensaje-confirmacion" class="mensaje-confirmacion" style="display: none;">
+    Respuestas guardadas correctamente.
+</div>
+<div id="mensaje-error" class="mensaje-error" style="display: none;">
+    Error al guardar las respuestas.
+</div>
+
+<script>
+$(document).ready(function() {
+    $('form input, form select, form textarea').on('input change', function() {
+        var formData = $(this).closest('form').serialize();
+        var contenedor = $(this).closest('.contenedor-respuestas');
+        console.log('Datos del formulario:', formData); // Mensaje de depuración
+
+        $.ajax({
+            type: 'POST',
+            url: 'procesar_formulario.php',
+            data: formData,
+            success: function(response) {
+                console.log('Datos enviados: ' + response);
+                contenedor.removeClass('error').addClass('guardado');
+                $('#mensaje-confirmacion').show().delay(3000).fadeOut();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en la solicitud AJAX:', error); // Mensaje de depuración
+                contenedor.removeClass('guardado').addClass('error');
+                $('#mensaje-error').show().delay(3000).fadeOut();
+            }
+        });
+    });
+});
+</script>
 
 </body>
 </html>
