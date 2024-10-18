@@ -1,0 +1,78 @@
+
+.image-container {
+    animation: scaleUpDown 0.5s ease infinite alternate;
+}
+
+@keyframes scaleUpDown {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+.title-container {
+    background-color: #28a745;
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+
+}
+
+body {
+    font-family: Arial, sans-serif;
+    align-items: center;
+    background-image: url('../img/brg.jpg');
+    background-size: cover;
+    background-repeat: repeat;
+
+}
+
+.container {
+  
+    width: 80%;
+    max-width: 550px;
+    border-radius: 20px;
+    display: flex;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.619), rgba(35, 138, 42, 0.5));
+   
+}
+
+/* Estilo general de los botones */
+.btn-custom {
+    display: inline-block;
+    width: 100%; /* Ocupa todo el ancho del contenedor padre */
+    max-width: 400px; /* Ajusta el ancho máximo según sea necesario */
+    height: 80px; /* Ajusta la altura según sea necesario */
+    font-size: 1.5em; /* Ajusta el tamaño del texto */
+    text-align: center;
+    line-height: 80px; /* Alinea verticalmente el texto */
+    padding: 0 20px; /* Espacio interno a los lados */
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Espacio entre botones */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+    text-transform: uppercase; /* Texto en mayúsculas */
+    overflow: hidden; /* Oculta el texto que se salga del contenedor */
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es demasiado largo */
+    transition: background-color 0.3s, transform 0.3s; /* Efectos de transición */
+}
+
+.btn-custom {
+    white-space: normal; /* Permite que el texto se ajuste en varias líneas */
+    word-wrap: break-word; /* Permite que las palabras largas se dividan */
+}
+
+/* Estilos para pantallas pequeñas (dispositivos móviles) */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Cambio a dirección vertical */
+        justify-content: flex-start; /* Alineación arriba */
+        align-items: center; /* Centra los elementos horizontalmente */
+    }
+
+    .image-container {
+        order: 1; /* Cambia el orden para que aparezca antes del contenedor de preguntas */
+    }
+}

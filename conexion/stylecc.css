@@ -1,0 +1,17 @@
+body {   
+    background-image: url('../img/gr2.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;  
+    background-position: top;
+    font-family: 'Roboto', sans-serif; 
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    max-width: 100%;
+    background-attachment: fixed;
+}

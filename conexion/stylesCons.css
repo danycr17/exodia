@@ -1,0 +1,306 @@
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #2ecc71;
+}
+.pagination a.active {
+    font-weight: bold;
+}
+
+.pagination a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #2ecc71;
+}
+.pagination a.active {
+    font-weight: bold;
+}
+
+/* Estilos para el modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.close {
+    color: #aaa;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+}
+
+.modal-body {
+    padding: 10px;
+}
+
+.modal-body table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-body th, .modal-body td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.modal-body th {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.modal-body tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    background: url('../img/brg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+.container {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    position: relative;
+}
+.title {
+    font-size: 36px;
+    color: #2ecc71;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+    padding-bottom: 15px;
+    border-bottom: 5px solid #2ecc71;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(to right, #27ae60, #2ecc71);
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.field {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.input {
+    border: 2px solid #2ecc71;
+    border-radius: 25px;
+    padding: 15px;
+    width: 300px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+}
+.input:focus {
+    border-color: #27ae60;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.containerr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.card {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 200px auto 80px;
+    grid-template-areas: "image" "text" "stats";
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    text-align: center;
+    overflow: hidden;
+    margin: 20px;
+    cursor: pointer;
+    width: 300px;
+    height: 400px;
+    background: linear-gradient(to top, #ffffff, #e1f5fe);
+}
+.card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to top, #e1f5fe, #b3e5fc);
+}
+.card-image {
+    grid-area: image;
+    background: url("../img/ff.png") no-repeat center center;
+    background-size: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    height: 200px;
+    transition: opacity 0.3s ease;
+}
+.card:hover .card-image {
+    opacity: 0.8;
+}
+.card-text {
+    grid-area: text;
+    padding: 20px;
+    background: #ffffff;
+    transition: background-color 0.3s ease;
+}
+.card-text h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #2ecc71;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+.card-stats {
+    grid-area: stats;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background: #2ecc71;
+    height: 80px;
+    box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+.card-stats:hover {
+    background: #27ae60;
+}
+.card-stats .stat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #ffffff;
+    padding: 10px 0;
+}
+.card-stats .border {
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+}
+.card-stats .value {
+    font-size: 24px;
+    font-weight: 700;
+}
+.card-stats .type {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: 0.9;
+}
+#tabla-container {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+th, td {
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+th {
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+tr:hover {
+    background-color: #e8f5e9;
+    cursor: pointer;
+}
+tbody tr {
+    transition: background-color 0.3s ease;
+}
+tbody tr:hover {
+    background-color: #dcedc8;
+}
+thead th {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+.pagination a {
+    margin: 0 5px;
+    padding: 10px 15px;
+    color: #2ecc71;
+    background-color: #ffffff;
+    border: 1px solid #2ecc71;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+.pagination a:hover {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
+.pagination a.active {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
